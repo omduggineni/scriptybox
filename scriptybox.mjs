@@ -1,6 +1,6 @@
 const get_worker = async (worker) => {
     return await new Promise((resolve, reject) => {
-        let worker = new Worker(new URL("./javascript-sandbox-worker.js", import.meta.url));
+        let worker = new Worker(new URL("./scriptybox-worker.js", import.meta.url));
         worker.addEventListener("message", (event) => {
             if (event.data === "ready") {
                 resolve(worker);
@@ -43,17 +43,11 @@ function runInSandboxTemp(code_string, argument_names, time_limit) {
 }
 
 async function persistentRunInSandbox(code_string, argument_names, time_limit_per_invocation) {
-    // let object_url = URL.createObjectURL(sandbox_script_blob);
-    // let worker = new Worker(object_url);
-    // //because this worker is on an object URL,
-    // //it won't be able to send network requests to the server
-    // // even if the code in the sandbox manage to get access
-    // // to the blocked APIs necessary to do so because of CORS
-    // URL.revokeObjectURL(object_url);
     let worker = await get_worker();
     let previous_invocation = Promise.resolve();
-    return previous_invocation = previous_invocation.then(() => {
-        return new Promise((resolve, reject) => {
+    return async (...args) => {
+        await previous_invocation;
+        return previous_invocation = new Promise((resolve, reject) => {
             worker.addEventListener("message", (event) => {
                 if (event.data.error) {
                     reject(event.data.error);
@@ -74,7 +68,7 @@ async function persistentRunInSandbox(code_string, argument_names, time_limit_pe
                 reject("Time limit exceeded");
             }, time_limit_per_invocation);
         });
-    });
+    };
 }
 
 const runInSandbox = async (code_string, argument_names, options) => {

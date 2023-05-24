@@ -100,6 +100,7 @@ queueMicrotask((() => {
 
 //delete all APIs, then put back the whitelisted ones
 for (let APIfunction in this) {
+    if (APIfunction === "self" || APIfunction === "globalThis" || APIfunction === "this") continue;
     this[APIfunction] = null;
     self[APIfunction] = null;
     globalThis[APIfunction] = null;

@@ -19,7 +19,17 @@ Method signature:
 ```javascript
 import { runInSandbox } from './scriptybox.mjs'
 
-const sandboxedFunction = await runInSandbox('return a + b', ['a', 'b'], { time_limit: 1000, persistent: true })
+const sandboxedFunction = await runInSandbox('return a + b', ['a', 'b'], { time_limit: 1000 })
 const result = await sandboxedFunction(1, 2) // result = 3
 console.log(result)
+
+const persistentSandboxedFunction = await runInSandbox('this.i = this.i || 0; this.i++; return this.i', [], {  time_limit: 1000, persistent: true })
+const result1 = await persistentSandboxedFunction() // result1 = 1
+console.log(result1)
+const result2 = await persistentSandboxedFunction() // result2 = 2
+console.log(result2)
+
+const illegalMethodCall = await runInSandbox(`fetch('https://example.com')`, [], { time_limit: 1000 })
+const resulti = await illegalMethodCall() // Uncaught TypeError: fetch is not a function
+console.log(resulti)
 ```
