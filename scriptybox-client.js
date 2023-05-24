@@ -100,9 +100,9 @@ queueMicrotask((() => {
 
 //delete all APIs, then put back the whitelisted ones
 for (let APIfunction in this) {
-    this[APIfunction] = () => { };
-    self[APIfunction] = () => { };
-    globalThis[APIfunction] = () => { };
+    this[APIfunction] = null;
+    self[APIfunction] = null;
+    globalThis[APIfunction] = null;
 }
 for (let APIfunction in allowedAPIs) {
     this[APIfunction] = allowedAPIs[APIfunction];
